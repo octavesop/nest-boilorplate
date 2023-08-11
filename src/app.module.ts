@@ -2,8 +2,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { HealthcheckModule } from './modules/healthcheck/healthcheck.module';
 
 @Module({
   imports: [
@@ -20,8 +19,10 @@ import { AppService } from './app.service';
         },
       }),
     }),
+
+    // ## Modules
+    HealthcheckModule,
   ],
-  controllers: [AppController],
   providers: [
     {
       provide: APP_PIPE,
@@ -31,7 +32,6 @@ import { AppService } from './app.service';
     //   provide: APP_GUARD,
     //   useClass: JwtAuthGuard, // 전역 적용의 경우 주석 해제
     // },
-    AppService,
   ],
 })
 export class AppModule {}
