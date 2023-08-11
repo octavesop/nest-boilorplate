@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { NODE_ENV } from './consts/env.enum';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
@@ -37,8 +38,10 @@ const bootstrap = async () => {
     .setVersion('0.0.1')
     .build();
 
+  const swaggerURI = '/docs';
+
   SwaggerModule.setup(
-    '/docs',
+    swaggerURI,
     app,
     SwaggerModule.createDocument(app, swaggerConfig),
   );
@@ -53,6 +56,10 @@ const bootstrap = async () => {
       logger.log(
         `Application Environment is **${configService.get('NODE_ENV')}** Mode`,
       );
+
+      if (configService.get('NODE_ENV') !== NODE_ENV.PRODUCTION) {
+        logger.verbose(`You can check ${await app.getUrl()}${swaggerURI}`);
+      }
     },
   );
 };
