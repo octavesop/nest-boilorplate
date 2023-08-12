@@ -8,6 +8,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NODE_ENV } from './consts/env.enum';
+import { HttpGlobalFilter } from './filters/httpException.filter';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +32,7 @@ const bootstrap = async () => {
 
   // default setting
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalFilters(new HttpGlobalFilter());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Nest.js boilorplate')
