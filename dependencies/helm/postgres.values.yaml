@@ -1,0 +1,15 @@
+# k8s 환경이며 helm이 설치된 경우
+# 다음 명령어를 터미널에 입력하면 5432번으로 postgresql이 서비스됩니다.
+
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# helm repo update
+# helm install my-postgres -f ./helm/postgres.values.yaml bitnami/postgresql
+# kubectl port-forward --namespace default svc/my-postgres-postgresql 5432:5432 --address='0.0.0.0'
+
+# 해당 문서는 arm64 기반 프로세서에서 동작하지 않습니다. 이 경우 docker를 통해서 설치하세요.
+
+auth:
+  enablePostgresUser: true
+  postgresPassword: "test" # postgres 계정에서 사용할 비밀번호를 입력하세요.
+  database: "test" # 기본으로 생성할 데이터베이스명을 입력하세요.
+  architecture: standalone
