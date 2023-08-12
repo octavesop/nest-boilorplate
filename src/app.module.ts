@@ -4,6 +4,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+import { LoadersModule } from './loaders/loaders.module';
 import { HealthcheckModule } from './modules/healthcheck/healthcheck.module';
 import { UserModule } from './modules/user/user.module';
 
@@ -38,6 +39,9 @@ import { UserModule } from './modules/user/user.module';
       }),
       inject: [ConfigService],
     }),
+
+    // ## Global Module
+    LoadersModule,
 
     // ## Modules
     HealthcheckModule,
