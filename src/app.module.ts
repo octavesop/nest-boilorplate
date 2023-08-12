@@ -2,7 +2,10 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { HealthcheckModule } from './modules/healthcheck/healthcheck.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -12,16 +15,33 @@ import { HealthcheckModule } from './modules/healthcheck/healthcheck.module';
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService<NodeJS.ProcessEnv>) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('AUTH_ACCESS_TOKEN_SECRET'),
         signOptions: {
           expiresIn: configService.get<string>('AUTH_ACCESS_TOKEN_EXPIRE'),
         },
       }),
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('POSTGRESQL_HOST'),
+        port: configService.get('POSTGRESQL_PORT'),
+        username: configService.get('POSTGRESQL_USERNAME'),
+        password: configService.get('POSTGRESQL_PASSWORD'),
+        database: configService.get('POSTGRESQL_DATABASE'),
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+        synchronize: configService.get('NODE_ENV') === 'local' ? true : false,
+        logging: true,
+        autoLoadEntities: true,
+      }),
+      inject: [ConfigService],
+    }),
 
     // ## Modules
     HealthcheckModule,
+    UserModule,
   ],
   providers: [
     {
