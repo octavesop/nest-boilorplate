@@ -59,7 +59,7 @@ export class UserService {
   }
 
   // TODO
-  // not recommended use response dto
+  // not recommended, use response dto instead
   async addUser(request: AddUserRequest): Promise<User> {
     try {
       return await this.userRepository.save(request);
