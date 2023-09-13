@@ -6,8 +6,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { NODE_ENV } from './consts/env.enum';
+import { HttpGlobalFilter } from './filters/httpException.filter';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +33,7 @@ const bootstrap = async () => {
 
   // default setting
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalFilters(new HttpGlobalFilter());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Nest.js boilorplate')
@@ -45,6 +48,14 @@ const bootstrap = async () => {
     app,
     SwaggerModule.createDocument(app, swaggerConfig),
   );
+
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    credentials: true,
+  });
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
 
   await app.listen(
     configService.get('PORT'),

@@ -1,10 +1,11 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { TokenNotFoundException } from 'src/exceptions/tokenNotFound.exception';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  private readonly logger = new Logger(JwtAuthGuard.name);
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const jwtService = new JwtService({}); // TODO
     try {
@@ -24,7 +25,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         exp: response.exp,
       };
 
-      console.log(decodePayload);
+      this.logger.verbose(decodePayload);
 
       return true;
     } catch (error) {
